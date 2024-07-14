@@ -1,26 +1,21 @@
-import java.util.LinkedList;
-
 public class HashTable<Key, Value> {
 
     private static final int CAPACITY = 12;
-    private LinkedList< Item<Key, Value> >[] buckets;
+    private Node<Key, Value>[] buckets;
     private int size = 0;
 
     // HT constructor
     public HashTable() {
-        buckets = new LinkedList[CAPACITY];
-        // turning each idx into a "bucket" with empty LL
-        for (int i = 0; i < CAPACITY; i++) {
-            buckets[i] = new LinkedList<>();
-        }
+        buckets = new Node[CAPACITY];
     }
 
-    // item constructor
-    private static class Item<K, V> {
+    // Node class to store items
+    private static class Node<K, V> {
         K key;
         V value;
+        Node<K, V> next;
 
-        Item(K key, V value) {
+        Node(K key, V value) {
             this.key = key;
             this.value = value;
         }
@@ -37,95 +32,121 @@ public class HashTable<Key, Value> {
     }
 
     public void add(Key key, Value val) {
-        // get idx
         int index = hashKey(key);
-        LinkedList< Item<Key, Value> > bucket = buckets[index];
 
-        for (int i=0; i<bucket.size(); i++) {
-            // get the item at idx i
-            Item<Key, Value> item = bucket.get(i);
-            if (item.key.equals(key)) {
-                // Update existing key with new val
-                item.value = val;
-                return;
+        if (buckets[index] == null) {
+            buckets[index] = new Node<>(key, val);
+        } else {
+            Node<Key, Value> current = buckets[index];
+            while (current != null) {
+                if (current.key.equals(key)) {
+                    current.value = val; // Update existing key with new val
+                    return;
+                }
+                if (current.next == null) {
+                    current.next = new Node<>(key, val);
+                    break;
+                }
+                current = current.next;
             }
         }
-        // add new item if no key
-        bucket.add(new Item<>(key, val));
         size++;
     }
 
-    public Value get(Key key) {
-        // val for if item is found
-        Value found = null;
-        // get idx
+    public void remove(Key key) {
         int index = hashKey(key);
-        LinkedList< Item<Key, Value> > bucket = buckets[index];
+        Node<Key, Value> current = buckets[index];
+        Node<Key, Value> prev = null;
 
-        for (int i=0; i<bucket.size(); i++) {
-            // get the item at idx i
-            Item<Key, Value> item = bucket.get(i);
-            if (item.key.equals(key)) {
-                // update found
-                found = item.value;
-                break;
+        while (current != null) {
+            if (current.key.equals(key)) {
+                if (prev == null) {
+                    buckets[index] = current.next;
+                } else {
+                    prev.next = current.next;
+                }
+                size--;
+                return;
             }
+            prev = current;
+            current = current.next;
         }
-        return found;
+    }
+
+    public void remove(Key key, Value value) {
+        int index = hashKey(key);
+        Node<Key, Value> current = buckets[index];
+        Node<Key, Value> prev = null;
+
+        while (current != null) {
+            if (current.key.equals(key) && current.value.equals(value)) {
+                if (prev == null) {
+                    buckets[index] = current.next;
+                } else {
+                    prev.next = current.next;
+                }
+                size--;
+                return;
+            }
+            prev = current;
+            current = current.next;
+        }
+    }
+
+    public Value get(Key key) {
+        int index = hashKey(key);
+        Node<Key, Value> current = buckets[index];
+
+        while (current != null) {
+            if (current.key.equals(key)) {
+                return current.value;
+            }
+            current = current.next;
+        }
+        return null;
     }
 
     public boolean containsKeyAndVal(Key key, Value val) {
-        // get idx
         int index = hashKey(key);
-        LinkedList< Item<Key, Value> > bucket = buckets[index];
+        Node<Key, Value> current = buckets[index];
 
-        for (int i=0; i<bucket.size(); i++) {
-            // get the item at idx i
-            Item<Key, Value> item = bucket.get(i);
-
-            if ( item.key.equals(key) && item.value.equals(val) ) {
-                return (item.key.equals(key) && item.value.equals(val));
+        while (current != null) {
+            if (current.key.equals(key) && current.value.equals(val)) {
+                return true;
             }
+            current = current.next;
         }
         return false;
     }
 
     public boolean containsKey(Key key) {
-        // get idx
         int index = hashKey(key);
-        LinkedList< Item<Key, Value> > bucket = buckets[index];
+        Node<Key, Value> current = buckets[index];
 
-        for (int i=0; i<bucket.size(); i++) {
-            // get the item at idx i
-            Item<Key, Value> item = bucket.get(i);
-
-            if ( item.key.equals(key) ) {
+        while (current != null) {
+            if (current.key.equals(key)) {
                 return true;
             }
-
+            current = current.next;
         }
         return false;
     }
 
     public boolean containsVal(Value val) {
-        // loop thru array
         for (int i = 0; i < buckets.length; i++) {
-            LinkedList<Item<Key, Value>> bucket = buckets[i];
-            //loop thru bucket
-            for (int j = 0; j < bucket.size(); j++) {
-                Item<Key, Value> item = bucket.get(j);
-                if (item.value.equals(val)) {
+            Node<Key, Value> current = buckets[i];
+
+            while (current != null) {
+                if (current.value.equals(val)) {
                     return true;
                 }
+                current = current.next;
             }
         }
         return false;
     }
 
-
-
     public static void main(String[] args) {
-
         HashTable<Integer, String> hi = new HashTable<>();
         hi.add(1, "sponge");
         hi.add(3, "three");
@@ -136,26 +157,7 @@ public class HashTable<Key, Value> {
         hi.add(7, "bronbron");
         hi.add(43, "curry");
 
-
         System.out.println(hi.containsKeyAndVal(3, "three"));
-
         System.out.println(hi.containsKeyAndVal(111, "four"));
-//        System.out.println(hi.get(1));
-//        System.out.println(hi.get(2));
-//        System.out.println(hi.size);
-//        System.out.println(hi.containsKeyAndVal(1,"spong"));
-//        System.out.println(hi.containsKey(1));
-//        System.out.println(hi.containsVal("sponge"));
-
-
-
-
-
-
-
-
-
-
     }
-
 }

@@ -7,12 +7,14 @@ class HashTableTest {
     @Test
     void addOne() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         assertEquals(1, hi.getSize());
     }
     @Test
     void addTwo() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         hi.add(2, "spongebob");
         assertEquals(2, hi.getSize());
@@ -20,6 +22,7 @@ class HashTableTest {
     @Test
     void addMultiple() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         hi.add(2, "spongebob");
         hi.add(3,"hey, there");
@@ -32,6 +35,7 @@ class HashTableTest {
     @Test
     void getOne() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         assertEquals("sponge", hi.get(1));
 
@@ -39,6 +43,7 @@ class HashTableTest {
     @Test
     void getTwo() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         hi.add(3, "three");
         assertEquals("sponge", hi.get(1));
@@ -48,6 +53,7 @@ class HashTableTest {
     @Test
     void getMultiple() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         hi.add(3, "three");
         hi.add(111, "four");
@@ -71,6 +77,7 @@ class HashTableTest {
     @Test
     void containsKeyAndVal() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         hi.add(3, "three");
         hi.add(111, "four");
@@ -97,6 +104,7 @@ class HashTableTest {
     @Test
     void containsKey() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         hi.add(3, "three");
         hi.add(111, "four");
@@ -123,6 +131,7 @@ class HashTableTest {
     @Test
     void containsVal() {
         HashTable<Integer, String> hi = new HashTable<>();
+
         hi.add(1, "sponge");
         hi.add(3, "three");
         hi.add(111, "four");
@@ -145,6 +154,48 @@ class HashTableTest {
         assertTrue(hi.containsVal("sponge"));
         assertTrue(hi.containsVal("four"));
         assertEquals(8, hi.getSize());
+    }
+
+    @Test
+    void remove() {
+        HashTable<Integer, String> hi = new HashTable<>();
+
+        hi.add(1, "sponge");
+        hi.add(3, "three");
+        hi.add(111, "four");
+        hi.remove(3);
+        hi.add(33, "kobe");
+        hi.add(76, "mj");
+        hi.add(9, "bron");
+        hi.remove(111);
+        hi.add(7, "bronbron");
+        hi.add(43, "curry");
+
+        assertEquals(6, hi.getSize());
+        assertTrue(hi.containsVal("mj"));
+        assertFalse(hi.containsVal("three"));
+    }
+
+    @Test
+    void removeKeyAndVal() {
+        HashTable<Integer, String> hi = new HashTable<>();
+
+        hi.add(1, "sponge");
+        hi.add(3, "three");
+        hi.add(111, "four");
+        hi.remove(3, "four");
+        hi.add(33, "kobe");
+        hi.add(76, "mj");
+        hi.add(9, "bron");
+        hi.remove(111, "four");
+        hi.add(7, "bronbron");
+        hi.add(43, "curry");
+
+        assertEquals(7, hi.getSize());
+        assertTrue(hi.containsVal("three"));
+        assertFalse(hi.containsVal("four"));
+        assertFalse(hi.containsKeyAndVal(111, "four"));
+        assertFalse(hi.containsKey(111));
     }
 
 
